@@ -55,7 +55,7 @@ def news(country='us',category='general'):
         print("Error fetching news:", e)
 
 def weather(city="Kathmandu"):
-    api='88c229e46cd428771d88b819e1ae885d'
+    api='88c229e46cd428771d88b819e1ae885d' #deactivated 
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api}&units=metric"
     try:
         response=requests.get(url)
