@@ -1,6 +1,6 @@
-from unicodedata import category
 import requests
 from random import randint 
+from datetime import datetime, timedelta
 
 def joke():
     url = "https://icanhazdadjoke.com/"
@@ -59,12 +59,41 @@ def news(country='us',category='general',query=None):
     except Exception as e:
         print("Error fetching news:", e)
 
-def weather():
+def weather(city="Kathmandu"):
     api='88c229e46cd428771d88b819e1ae885d'
-    url=f''
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api}&units=metric"
+    try:
+        response=requests.get(url)
+        data=response.json()
+        if response.status_code == 200:
+            temp=data['main']['temp']
+            desc=data['weather'][0]['description']
+            feels_like=data['main']['feels_like']
+            humidity=data['main']['humidity']
+            pressure=data['main']['pressure']
+            wind_speed=data['wind']['speed']
+            wind_deg=data['wind']['deg']
+            timestamp = data.get("dt")
+            if timestamp:
+               utc_time = datetime.utcfromtimestamp(timestamp)
+               # Nepal is UTC+5:45 → 5 hours 45 minutes
+               npt_time = utc_time + timedelta(hours=5, minutes=45)
+               updated_time = npt_time.strftime('%Y-%m-%d %H:%M:%S NPT')
+
+            else:
+                updated_time = "Unknown"
+
+            print(f"Weather in {city} (updated {updated_time}):")
+            print(f"   Temperature: {temp}°C (feels like {feels_like}°C)")
+            print(f"   Condition: {desc}")
+            print(f"   Humidity: {humidity}%")
+            print(f"   Pressure: {pressure} hPa")
+            print(f"   Wind: {wind_speed} m/s, direction {wind_deg}°")
+    except Exception as e:
+        print("Error fetching weather:", e)
 
 def main():
-    user=input("Click 1. to get a joke\nClick 2. to get a quote\nClick 3. to get news\nClick 4. to exit\n")
+    user=input("Click 1. to get a joke\nClick 2. to get a quote\nClick 3. to get news\nClick 4. to get weather\nClick 5. to exit\n")
     if user=='1':
         joke()
     elif user=='2':
@@ -74,6 +103,9 @@ def main():
         category=input("Enter category business/entertainment/general/health/science/sports/technology\n")
         query=input("Enter a keyword to search for news (optional, press enter to skip): ")
         news(country,category,query)
+    elif user=='4':
+        city=input("Enter city name: ")
+        weather(city)
     else: print("Goodbye!")
 
 
