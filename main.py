@@ -1,5 +1,5 @@
 import requests
-from random import randint as r 
+from random import randint 
 
 def joke():
     url = "https://icanhazdadjoke.com/"
@@ -16,14 +16,15 @@ def joke():
         print("Error fetching joke:", e)    
 
 def quote():
-    url="https://api.freeapi.app/api/v1/public/quotes/random"
+    url="https://api.freeapi.app/api/v1/public/quotes"
     try:
         response=requests.get(url)
         data=response.json()
-        range=r(0, len(data)-1)
-        author=data[range]['author']
-        quote=data[range]['content']
-        print(f"Quote: {quote}\nAuthor: {author}")
+        quote_list=data['data']['data']
+        range=randint(0, len(quote_list)-1)
+        author=quote_list[range]['author']
+        content=quote_list[range]['content']
+        print(f"{content}\n-{author}\n")
         user=input("Click 1. to get another quote\nClick 2. to exit\n")
         if user=='1':
             quote()
