@@ -33,14 +33,9 @@ def quote():
     except Exception as e:
         print("Error fetching quote:", e)
   
-def news(country='us',category='general',query=None):
-    if country == 'us':
-        # US works fine on free tier
-        url = f"https://newsapi.org/v2/top-headlines?country={country}&category={category}&apiKey=YOUR_API_KEY"
-    else:
-        # fallback for other countries
-        search_term = query if query else country
-        url = f"https://newsapi.org/v2/everything?q={search_term}&apiKey=YOUR_API_KEY"
+def news(country='us',category='general'):
+    url = f"https://newsapi.org/v2/everything?country={country}&category={category}&apiKey=YOUR_API_KEY"
+   
 
     try:
         response=requests.get(url)
@@ -75,13 +70,22 @@ def weather(city="Kathmandu"):
             wind_deg=data['wind']['deg']
             timestamp = data.get("dt")
             if timestamp:
-               utc_time = datetime.utcfromtimestamp(timestamp)
-               # Nepal is UTC+5:45 → 5 hours 45 minutes
-               npt_time = utc_time + timedelta(hours=5, minutes=45)
-               updated_time = npt_time.strftime('%Y-%m-%d %H:%M:%S NPT')
-
+               updated_dt = datetime.utcfromtimestamp(timestamp)
+               now_dt = datetime.utcnow()
+               # Calculate difference
+               diff = now_dt - updated_dt
+               minutes_ago = int(diff.total_seconds() // 60)
+               if minutes_ago < 1:updated_time = "just now"
+               elif minutes_ago == 1:
+                updated_time = "1 minute ago"
+               elif minutes_ago < 60:
+                updated_time = f"{minutes_ago} minutes ago"
+               else:
+                hours_ago = minutes_ago // 60
+                updated_time = f"{hours_ago} hours ago"
             else:
                 updated_time = "Unknown"
+
 
             print(f"Weather in {city} (updated {updated_time}):")
             print(f"   Temperature: {temp}°C (feels like {feels_like}°C)")
@@ -101,8 +105,7 @@ def main():
     elif user=='3':
         country=input("Enter country code us/au/gb/in/ca/it/fr/de/jp/ru/sa/ae\n")
         category=input("Enter category business/entertainment/general/health/science/sports/technology\n")
-        query=input("Enter a keyword to search for news (optional, press enter to skip): ")
-        news(country,category,query)
+        news(country,category)
     elif user=='4':
         city=input("Enter city name: ")
         weather(city)
