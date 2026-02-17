@@ -49,14 +49,14 @@ def news(country='us',category='general'):
         if not articles:
             print("No news articles found.")
             return
-        for i, article in enumerate(articles[:5], start=1):
-            title = article.get("title", "No title")
-            desc = article.get("description", "No description")
-            url = article.get("url", "")
-            date = article.get("publishedAt", "Unknown date")
-            source = article.get("source", {}).get("name", "Unknown source")
-            print(f"{i}. {title}\n   {desc}\n   Source: {source}, Date: {date}\n   URL: {url}\n")
-            with open("news.txt",'a')as f:
+        with open("news.txt",'a')as f:
+            for i, article in enumerate(articles[:5], start=1):
+                title = article.get("title", "No title")
+                desc = article.get("description", "No description")
+                url = article.get("url", "")
+                date = article.get("publishedAt", "Unknown date")
+                source = article.get("source", {}).get("name", "Unknown source")
+                print(f"{i}. {title}\n   {desc}\n   Source: {source}, Date: {date}\n   URL: {url}\n")
                 f.write(f"{i}. {title}\n   {desc}\n   Source: {source}, Date: {date}\n   URL: {url}\n\n")
     except Exception as e:
         print("Error fetching news:", e)
