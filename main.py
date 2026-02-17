@@ -1,4 +1,4 @@
-import requests
+import requests,os,csv
 from random import randint 
 from datetime import datetime, timedelta
 
@@ -9,6 +9,8 @@ def joke():
         response = requests.get(url, headers=headers)
         joke_data = response.json()
         print(joke_data['joke'])
+        with open("jokes.txt",'a')as f:
+            f.write(joke_data['joke']+'\n')
         user=input("\nClick 1. to get another joke\nClick 2. to exit\n")
         if user=='1':
             joke()
@@ -26,6 +28,8 @@ def quote():
         author=quote_list[range]['author']
         content=quote_list[range]['content']
         print(f"{content}\n-{author}\n")
+        with open("quotes.txt",'a')as f:
+            f.write(f"{content}\n-{author}\n")
         user=input("Click 1. to get another quote\nClick 2. to exit\n")
         if user=='1':
             quote()
@@ -34,7 +38,8 @@ def quote():
         print("Error fetching quote:", e)
   
 def news(country='us',category='general'):
-    url = f"https://newsapi.org/v2/everything?country={country}&category={category}&apiKey=YOUR_API_KEY"
+    api=f'9db0badab9c34cec86b29ccd96393d9c'
+    url = f"https://newsapi.org/v2/top-headlines?country={country}&category={category}&apiKey={api}"
    
 
     try:
@@ -51,11 +56,13 @@ def news(country='us',category='general'):
             date = article.get("publishedAt", "Unknown date")
             source = article.get("source", {}).get("name", "Unknown source")
             print(f"{i}. {title}\n   {desc}\n   Source: {source}, Date: {date}\n   URL: {url}\n")
+            with open("news.txt",'a')as f:
+                f.write(f"{i}. {title}\n   {desc}\n   Source: {source}, Date: {date}\n   URL: {url}\n\n")
     except Exception as e:
         print("Error fetching news:", e)
 
 def weather(city="Kathmandu"):
-    api='88c229e46cd428771d88b819e1ae885d' #deactivated 
+    api='85d4e818f5941edafd29e1fe235a08d6' 
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api}&units=metric"
     try:
         response=requests.get(url)
@@ -93,6 +100,9 @@ def weather(city="Kathmandu"):
             print(f"   Humidity: {humidity}%")
             print(f"   Pressure: {pressure} hPa")
             print(f"   Wind: {wind_speed} m/s, direction {wind_deg}°")
+            with open("weather.csv","a",encoding="utf-8")as f:
+                writer=csv.writer(f)
+                writer.writerow([city,updated_time,temp,desc,humidity,pressure,wind_speed,wind_deg])
     except Exception as e:
         print("Error fetching weather:", e)
 
